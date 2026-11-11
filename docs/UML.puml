@@ -1,0 +1,10 @@
+@startuml
+title Atividade6-EdN - operacao individual
+actor Aluno
+component Script
+component "Entrada / API" as Fonte
+component Terminal
+Aluno --> Script
+Script --> Fonte
+Script --> Terminal
+@enduml
