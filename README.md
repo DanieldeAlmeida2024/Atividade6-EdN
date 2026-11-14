@@ -16,12 +16,12 @@ python 1/gerador_senha.py
 python -m unittest discover -s tests -v
 ```
 
-A suíte acrescentada verifica documentação e sintaxe dos scripts; **não** comprova respostas corretas nem disponibilidade das APIs externas.
+A suíte inclui testes com mocks para os serviços externos e validações dos scripts, sem depender da disponibilidade real dos provedores.
 
 
-## Correções funcionais e de segurança (13/11/2026)
+## Validações e segurança
 
-- **Senhas:** a geração usa `secrets` (fonte criptograficamente apropriada), com embaralhamento seguro, garantia de letras maiúsculas/minúsculas, números e símbolo. Os tamanhos válidos são de 4 a 4096 caracteres; para contas reais, prefira 12 ou mais. O enunciado antigo pede `random`, mas a implementação usa `secrets` para não ensinar um gerador inseguro como solução recomendada.
+- **Senhas:** a geração usa `secrets` (fonte criptograficamente apropriada), com embaralhamento seguro, garantia de letras maiúsculas/minúsculas, números e símbolo. Os tamanhos válidos são de 4 a 4096 caracteres; para contas reais, prefira 12 ou mais. O módulo `secrets` fornece a fonte de aleatoriedade apropriada ao exercício de geração de senhas.
 - **APIs externas:** Random User, ViaCEP e AwesomeAPI têm limites de conexão/leitura de 3/8 segundos, em vez de bloquear indefinidamente. Códigos de moeda só aceitam três letras. Estruturas inválidas são tratadas sem encerrar o processo por exceções não tratadas.
 - **Testes reais:** `python -m pip install -r requirements.txt && python -m unittest discover -s tests -p 'test_*.py' -v`; os testes usam mocks e **não dependem de servidores externos nem atestam disponibilidade dessas APIs**.
 
