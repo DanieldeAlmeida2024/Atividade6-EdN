@@ -12,7 +12,7 @@ def consultar_cep(cep: str):
     print(f"\n--- 🔎 Consultando CEP: {cep_limpo} ---")
     
     try:
-        response = requests.get(API_URL)
+        response = requests.get(API_URL, timeout=(3, 8))
         response.raise_for_status() 
         dados = response.json()
         
@@ -29,8 +29,8 @@ def consultar_cep(cep: str):
         
     except requests.exceptions.RequestException as e:
         print(f"Erro ao conectar à API ViaCEP: {e}")
-    except Exception as e:
-        print(f"Ocorreu um erro inesperado: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Erro: A API retornou dados inválidos: {e}")
 
 def aplicacao_consulta_cep():
     print("--- 🏠 Programa de Consulta de Endereço por CEP ---")

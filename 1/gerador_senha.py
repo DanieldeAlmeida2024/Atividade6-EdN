@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 
 def gerar_senha_aleatoria(comprimento: int) -> str:
@@ -18,19 +18,19 @@ def gerar_senha_aleatoria(comprimento: int) -> str:
 
     todos_caracteres = letras_maiusculas + letras_minusculas + numeros + caracteres_especiais
 
-    if comprimento < 4:
-        raise ValueError("O comprimento da senha deve ser de pelo menos 4 para garantir a diversidade de caracteres.")
+    if type(comprimento) is not int or not 4 <= comprimento <= 4096:
+        raise ValueError("Informe um comprimento inteiro entre 4 e 4096 caracteres.")
 
     senha = [
-        random.choice(letras_maiusculas),
-        random.choice(letras_minusculas),
-        random.choice(numeros),
-        random.choice(caracteres_especiais)
+        secrets.choice(letras_maiusculas),
+        secrets.choice(letras_minusculas),
+        secrets.choice(numeros),
+        secrets.choice(caracteres_especiais)
     ]
 
     for _ in range(comprimento - 4):
-        senha.append(random.choice(todos_caracteres))
-    random.shuffle(senha)
+        senha.append(secrets.choice(todos_caracteres))
+    secrets.SystemRandom().shuffle(senha)
 
     return "".join(senha)
 
