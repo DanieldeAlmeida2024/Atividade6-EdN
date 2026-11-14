@@ -1,0 +1,16 @@
+@startuml
+title 3/consulta_cep.py: atividade
+start
+:Normalizar CEP removendo hífen e ponto;
+if (CEP tem 8 dígitos numéricos?) then (sim)
+:GET viacep.com.br/ws/{cep}/json/;
+if (JSON possui erro?) then (sim)
+:Informar não encontrado;
+else (não)
+:Exibir logradouro, bairro, localidade e UF;
+endif
+else (não)
+:Rejeitar sem chamada HTTP;
+endif
+stop
+@enduml
