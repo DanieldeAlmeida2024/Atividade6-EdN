@@ -1,14 +1,18 @@
 import requests
 import datetime
+import re
 
 def consultar_cotacao(codigo_moeda: str):
     codigo_moeda = codigo_moeda.upper().strip()
+    if not re.fullmatch(r'[A-Z]{3}', codigo_moeda):
+        print('Erro: Informe um código ISO de moeda com três letras (ex: USD).')
+        return
     API_URL = f"https://economia.awesomeapi.com.br/json/last/{codigo_moeda}-BRL"
     
     print(f"\n--- 🔎 Consultando Cotação: {codigo_moeda}/BRL ---")
     
     try:
-        response = requests.get(API_URL)
+        response = requests.get(API_URL, timeout=(3, 8))
         response.raise_for_status() 
         dados = response.json()
         
@@ -32,8 +36,8 @@ def consultar_cotacao(codigo_moeda: str):
         
     except requests.exceptions.RequestException as e:
         print(f"Erro ao conectar à API: {e}")
-    except Exception as e:
-        print(f"Ocorreu um erro inesperado: {e}")
+    except (ValueError, TypeError, KeyError, AttributeError) as e:
+        print(f"Erro: A API retornou cotação incompleta ou inválida: {e}")
 
 def aplicacao_cotacao():
     print("--- 💸 Consulta de Cotação em Tempo Real ---")
