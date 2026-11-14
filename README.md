@@ -45,3 +45,9 @@ O enunciado das atividades estão nos slides da Aula 10.
 3. Desenvolva um programa que consulte informações de endereço a partir de um CEP fornecido pelo usuário, utilizando a API ViaCEP. O programa deve exibir o logradouro, bairro, cidade e estado correspondentes ao CEP consultado.
 
 4. Crie um programa que consulte a cotação atual de uma moeda estrangeira em relação ao Real Brasileiro (BRL). O usuário deve informar o código da moeda desejada (ex: USD, EUR, GBP), e o programa deve exibir o valor atual, máximo e mínimo da cotação, além da data e hora da última atualização. Utilize a API da AwesomeAPI para obter os dados de cotação.
+
+## Documentação específica da atividade
+
+[Especificação dos scripts](docs/projeto/ESPECIFICACAO.md) · [Matriz histórica de testes](docs/testes/PLANO_DE_TESTES.md) · [UML](docs/uml/README.md) · [Versionamento](docs/controle/VERSIONAMENTO.md).
+
+A documentação original é preservada como referência de estudo. Os critérios vigentes e os resultados de CI atualizados estão no plano de testes principal e no GitHub Actions.
