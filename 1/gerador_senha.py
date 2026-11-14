@@ -23,13 +23,13 @@ def gerar_senha_aleatoria(comprimento: int) -> str:
 
     senha = [
         secrets.choice(letras_maiusculas),
-        random.choice(letras_minusculas),
-        random.choice(numeros),
-        random.choice(caracteres_especiais)
+        secrets.choice(letras_minusculas),
+        secrets.choice(numeros),
+        secrets.choice(caracteres_especiais)
     ]
 
     for _ in range(comprimento - 4):
-        senha.append(random.choice(todos_caracteres))
+        senha.append(secrets.choice(todos_caracteres))
     secrets.SystemRandom().shuffle(senha)
 
     return "".join(senha)
