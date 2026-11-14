@@ -1,0 +1,15 @@
+@startuml
+title Atividade6-EdN — funções Python reais
+actor Terminal
+component "1/gerador_senha.py\ngerar_senha_aleatoria" as M0
+Terminal --> M0
+component "2/perfil_aleatorio.py\ngerar_perfil_aleatorio" as M1
+Terminal --> M1
+component "3/consulta_cep.py\nconsultar_cep" as M2
+Terminal --> M2
+component "4/cotacao_moeda.py\nconsultar_cotacao" as M3
+Terminal --> M3
+note bottom
+Programas independentes; sem banco nem API própria.
+end note
+@enduml
