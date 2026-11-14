@@ -6,7 +6,7 @@ def gerar_perfil_aleatorio():
     print("--- 🌍 Gerador de Perfil de Usuário Aleatório ---")
     
     try:
-        response = requests.get(API_URL)
+        response = requests.get(API_URL, timeout=(3, 8))
         response.raise_for_status() 
         dados = response.json()
         
@@ -26,7 +26,7 @@ def gerar_perfil_aleatorio():
         
     except requests.exceptions.RequestException as e:
         print(f"Erro ao conectar à API: {e}")
-    except KeyError:
+    except (KeyError, IndexError, TypeError, ValueError):
         print("Erro: A estrutura de dados da API foi alterada ou o retorno está incompleto.")
 
 if __name__ == "__main__":
