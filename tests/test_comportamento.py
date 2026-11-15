@@ -84,6 +84,29 @@ class ApiTestes(unittest.TestCase):
             cotacao.consultar_cotacao("USD/../SECRET")
         get.assert_not_called()
 
+    def test_cep_unicode_ou_tipo_errado_nao_dispara_requisicao(self):
+        with patch.object(cep.requests, "get") as get:
+            cep.consultar_cep("１２３４５６７８")
+            cep.consultar_cep(None)
+            cep.consultar_cep(12345678)
+        get.assert_not_called()
+
+    def test_moeda_rejeita_nan_infinito_e_timestamp_fora_de_intervalo(self):
+        for bid, timestamp in (("NaN", "1700000000"), ("inf", "1700000000"),
+                               ("-5", "1700000000"), ("5", "99999999999999999999")):
+            resposta = Mock()
+            resposta.json.return_value = {"USDBRL": {
+                "name": "Dólar/Real", "timestamp": timestamp,
+                "bid": bid, "high": "5.20", "low": "5.10",
+            }}
+            with self.subTest(bid=bid, timestamp=timestamp), \
+                 patch.object(cotacao.requests, "get", return_value=resposta), \
+                 io.StringIO() as buffer, contextlib.redirect_stdout(buffer):
+                cotacao.consultar_cotacao("USD")
+                saida = buffer.getvalue()
+                self.assertIn("cotação incompleta ou inválida", saida)
+                self.assertNotIn("**Valor Atual", saida)
+
     def test_moeda_valida_usa_timeout(self):
         resposta = Mock()
         resposta.json.return_value = {"USDBRL": {

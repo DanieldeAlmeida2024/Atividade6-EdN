@@ -1,6 +1,7 @@
 import requests
 import datetime
 import re
+import math
 
 def consultar_cotacao(codigo_moeda: str):
     codigo_moeda = codigo_moeda.upper().strip()
@@ -24,19 +25,27 @@ def consultar_cotacao(codigo_moeda: str):
             
         cotacao = dados[chave_cotacao]
         
+        if not isinstance(cotacao, dict):
+            raise ValueError("Cotação não é um objeto")
         timestamp = int(cotacao.get('timestamp'))
-        data_hora = datetime.datetime.fromtimestamp(timestamp).strftime('%d/%m/%Y %H:%M:%S')
-        
+        # UTC evita diferença de relógio local nos testes e em diferentes máquinas.
+        data_hora = datetime.datetime.fromtimestamp(
+            timestamp, tz=datetime.timezone.utc
+        ).strftime('%d/%m/%Y %H:%M:%S UTC')
+        bid, alta, baixa = (float(cotacao.get(k)) for k in ('bid', 'high', 'low'))
+        if not all(math.isfinite(valor) and valor > 0 for valor in (bid, alta, baixa)):
+            raise ValueError("Cotação deve ser positiva e finita")
+
         print("\n--- Resultados da Cotação ---")
         print(f"**Moeda Consultada:** {cotacao.get('name')}")
-        print(f"**Valor Atual (Compra):** R$ {float(cotacao.get('bid')):.4f}")
-        print(f"**Máximo (Alta):** R$ {float(cotacao.get('high')):.4f}")
-        print(f"**Mínimo (Baixa):** R$ {float(cotacao.get('low')):.4f}")
+        print(f"**Valor Atual (Compra):** R$ {bid:.4f}")
+        print(f"**Máximo (Alta):** R$ {alta:.4f}")
+        print(f"**Mínimo (Baixa):** R$ {baixa:.4f}")
         print(f"**Data e Hora da Última Atualização:** {data_hora}")
         
     except requests.exceptions.RequestException as e:
         print(f"Erro ao conectar à API: {e}")
-    except (ValueError, TypeError, KeyError, AttributeError) as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OverflowError, OSError) as e:
         print(f"Erro: A API retornou cotação incompleta ou inválida: {e}")
 
 def aplicacao_cotacao():
