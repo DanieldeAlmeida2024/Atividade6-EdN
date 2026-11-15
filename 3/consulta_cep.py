@@ -1,9 +1,12 @@
 import requests
 
 def consultar_cep(cep: str):
+    if not isinstance(cep, str):
+        print("Erro: O CEP deve ser texto com exatamente 8 dígitos ASCII.")
+        return
     cep_limpo = cep.replace('-', '').replace('.', '').strip()
     
-    if len(cep_limpo) != 8 or not cep_limpo.isdigit():
+    if len(cep_limpo) != 8 or not (cep_limpo.isascii() and cep_limpo.isdigit()):
         print("Erro: O CEP deve conter exatamente 8 dígitos numéricos.")
         return
 
