@@ -23,6 +23,7 @@ A suíte inclui testes com mocks para os serviços externos e validações dos s
 
 - **Senhas:** a geração usa `secrets` (fonte criptograficamente apropriada), com embaralhamento seguro, garantia de letras maiúsculas/minúsculas, números e símbolo. Os tamanhos válidos são de 4 a 4096 caracteres; para contas reais, prefira 12 ou mais. O módulo `secrets` fornece a fonte de aleatoriedade apropriada ao exercício de geração de senhas.
 - **APIs externas:** Random User, ViaCEP e AwesomeAPI têm limites de conexão/leitura de 3/8 segundos, em vez de bloquear indefinidamente. Códigos de moeda só aceitam três letras. Estruturas inválidas são tratadas sem encerrar o processo por exceções não tratadas.
+- **ViaCEP:** a consulta só anuncia um endereço encontrado quando a resposta traz o CEP consultado, a cidade e a UF. Logradouro e bairro podem ficar vazios quando o CEP não identifica uma rua ou bairro específico. O indicador `erro` do ViaCEP ainda informa CEP inexistente.
 - **Testes reais:** `python -m pip install -r requirements.txt && python -m unittest discover -s tests -p 'test_*.py' -v`; os testes usam mocks e **não dependem de servidores externos nem atestam disponibilidade dessas APIs**.
 
 ## Atenção
