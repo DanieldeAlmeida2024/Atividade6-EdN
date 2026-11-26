@@ -79,6 +79,48 @@ class ApiTestes(unittest.TestCase):
         get.assert_called_once_with("https://viacep.com.br/ws/74000000/json/", timeout=(3, 8))
         self.assertIn("Goiânia", saida)
 
+    def test_cep_nao_anuncia_sucesso_para_endereco_incompleto_ou_divergente(self):
+        endereco = {"cep": "74000-000", "localidade": "Goiânia", "uf": "GO"}
+        for dados in ({}, [], {**endereco, "cep": "74000-001"},
+                      {**endereco, "localidade": " "}, {**endereco, "uf": None},
+                      {**endereco, "bairro": []}):
+            resposta = Mock()
+            resposta.json.return_value = dados
+            with (
+                self.subTest(dados=dados),
+                patch.object(cep.requests, "get", return_value=resposta),
+                io.StringIO() as buffer,
+                contextlib.redirect_stdout(buffer),
+            ):
+                cep.consultar_cep("74000-000")
+                self.assertIn("dados inválidos", buffer.getvalue())
+                self.assertNotIn("Endereço Encontrado", buffer.getvalue())
+
+    def test_cep_generico_aceita_logradouro_e_bairro_vazios(self):
+        resposta = Mock()
+        resposta.json.return_value = {"cep": "74000-000", "localidade": "Goiânia",
+                                       "uf": "GO", "logradouro": "", "bairro": ""}
+        with (
+            patch.object(cep.requests, "get", return_value=resposta),
+            io.StringIO() as buffer,
+            contextlib.redirect_stdout(buffer),
+        ):
+            cep.consultar_cep("74000-000")
+            self.assertIn("Endereço Encontrado", buffer.getvalue())
+            self.assertIn("**Cidade:** Goiânia", buffer.getvalue())
+
+    def test_cep_inexistente_preserva_mensagem_do_provedor(self):
+        resposta = Mock()
+        resposta.json.return_value = {"erro": True}
+        with (
+            patch.object(cep.requests, "get", return_value=resposta),
+            io.StringIO() as buffer,
+            contextlib.redirect_stdout(buffer),
+        ):
+            cep.consultar_cep("99999-999")
+            self.assertIn("CEP não encontrado", buffer.getvalue())
+            self.assertNotIn("Endereço Encontrado", buffer.getvalue())
+
     def test_moeda_invalida_nao_consulta_api(self):
         with patch.object(cotacao.requests, "get") as get:
             cotacao.consultar_cotacao("USD/../SECRET")

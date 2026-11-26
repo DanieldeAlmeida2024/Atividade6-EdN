@@ -1,3 +1,5 @@
+import re
+
 import requests
 
 def consultar_cep(cep: str):
@@ -18,17 +20,33 @@ def consultar_cep(cep: str):
         response = requests.get(API_URL, timeout=(3, 8))
         response.raise_for_status() 
         dados = response.json()
-        
+
+        if not isinstance(dados, dict):
+            raise ValueError("O endereço retornado deve ser um objeto JSON.")
         if dados.get('erro'):
             print("Resultado: CEP não encontrado ou inválido.")
             return
-            
+
+        cep_recebido = dados.get('cep')
+        cidade = dados.get('localidade')
+        uf = dados.get('uf')
+        logradouro = dados.get('logradouro', '')
+        bairro = dados.get('bairro', '')
+        if (
+            not isinstance(cep_recebido, str)
+            or cep_recebido.replace('-', '') != cep_limpo
+            or not isinstance(cidade, str) or not cidade.strip()
+            or not isinstance(uf, str) or not re.fullmatch(r'[A-Z]{2}', uf)
+            or not isinstance(logradouro, str) or not isinstance(bairro, str)
+        ):
+            raise ValueError("O endereço deve conter CEP correspondente, cidade e UF válidas.")
+
         print("\n--- Endereço Encontrado ---")
-        print(f"**CEP:** {dados.get('cep')}")
-        print(f"**Logradouro:** {dados.get('logradouro')}")
-        print(f"**Bairro:** {dados.get('bairro')}")
-        print(f"**Cidade:** {dados.get('localidade')}")
-        print(f"**Estado (UF):** {dados.get('uf')}")
+        print(f"**CEP:** {cep_recebido}")
+        print(f"**Logradouro:** {logradouro}")
+        print(f"**Bairro:** {bairro}")
+        print(f"**Cidade:** {cidade}")
+        print(f"**Estado (UF):** {uf}")
         
     except requests.exceptions.RequestException as e:
         print(f"Erro ao conectar à API ViaCEP: {e}")
